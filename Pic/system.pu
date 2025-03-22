@@ -129,8 +129,8 @@ package LibraryManager {
 
   package Data {
     class BookRepository {
-      - MySqlConnection _connection
-      + BookRepository(string connectionString)
+      - LibraryDbContext _context
+      + BookRepository(LibraryDbContext context)
       + void AddBook(Book book)
       + void UpdateBook(Book book)
       + void DeleteBook(int bookId)
@@ -138,8 +138,8 @@ package LibraryManager {
       + Book GetBookById(int bookId)
     }
     class MemberRepository {
-      - MySqlConnection _connection
-      + MemberRepository(string connectionString)
+      - LibraryDbContext _context
+      + MemberRepository(LibraryDbContext context)
       + void AddMember(Member member)
       + void UpdateMember(Member member)
       + void DeleteMember(int memberId)
@@ -147,18 +147,24 @@ package LibraryManager {
       + Member GetMemberById(int memberId)
     }
     class BorrowRepository {
-      - MySqlConnection _connection
-      + BorrowRepository(string connectionString)
-      + void AddBorrowRecord(BorrowRecord borrowRecord)
-      + void UpdateBorrowRecord(BorrowRecord borrowRecord)
-      + List<BorrowRecord> GetAllBorrowRecords()
-      + BorrowRecord GetBorrowRecordById(int id)
+      - LibraryDbContext _context
+      + BorrowRepository(LibraryDbContext context)
+      + void BorrowBook(int bookId, int memberId)
+      + void ReturnBook(int bookId, int memberId)
+      + List<BorrowRecord> GetBorrowHistory(int memberId)
+      + List<BorrowRecord> GetOverdueBooks(DateTime currentDate)
     }
     class BookHistoryRepository {
-      - MySqlConnection _connection
-      + BookHistoryRepository(string connectionString)
+      - LibraryDbContext _context
+      + BookHistoryRepository(LibraryDbContext context)
       + void AddBookHistory(BookHistory bookHistory)
       + List<BookHistory> GetBookHistory(int bookId)
+    }
+    class LibraryDbContext {
+        + DbSet<Book> Books
+        + DbSet<Member> Members
+        + DbSet<BorrowRecord> BorrowRecords
+        + DbSet<BookHistory> BookHistories
     }
   }
 
@@ -199,5 +205,14 @@ package LibraryManager {
   UI.BlazorUI --> Interfaces.IBorrowService : uses
   UI.BlazorUI --> Interfaces.IBookHistoryService : uses
 
+  Data.BookRepository --> Data.LibraryDbContext : uses
+  Data.MemberRepository --> Data.LibraryDbContext : uses
+  Data.BorrowRepository --> Data.LibraryDbContext : uses
+  Data.BookHistoryRepository --> Data.LibraryDbContext : uses
+
+  Data.LibraryDbContext --> Models.Book : uses
+  Data.LibraryDbContext --> Models.Member : uses
+  Data.LibraryDbContext --> Models.BorrowRecord : uses
+  Data.LibraryDbContext --> Models.BookHistory : uses
 }
 @enduml

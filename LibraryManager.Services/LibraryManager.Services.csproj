@@ -8,6 +8,5 @@
   <ItemGroup>
     <ProjectReference Include="..\LibraryManager.Models\LibraryManager.Models.csproj" />
     <ProjectReference Include="..\LibraryManager.Interfaces\LibraryManager.Interfaces.csproj" />
-    <ProjectReference Include="..\LibraryManager.Data\LibraryManager.Data.csproj" />
   </ItemGroup>
 </Project>
