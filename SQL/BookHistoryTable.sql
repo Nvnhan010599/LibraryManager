@@ -1,0 +1,7 @@
+CREATE TABLE BookHistory (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    BookId INT,
+    Action VARCHAR(255),
+    ActionDate DATETIME,
+    FOREIGN KEY (BookId) REFERENCES Book(Id)
+);

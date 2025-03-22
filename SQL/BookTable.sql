@@ -1,0 +1,7 @@
+CREATE TABLE Book (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Title VARCHAR(255),
+    Author VARCHAR(255),
+    Genre VARCHAR(255),
+    IsAvailable BOOLEAN
+);

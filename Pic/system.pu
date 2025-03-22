@@ -1,0 +1,203 @@
+@startuml
+package LibraryManager {
+  package Models {
+    class Book {
+      + int Id
+      + string Title
+      + string Author
+      + string Genre
+      + bool IsAvailable
+      --
+      + Book()
+    }
+    class Member {
+      + int Id
+      + string Name
+      + string Address
+      + string Phone
+      --
+      + Member()
+    }
+    class BorrowRecord {
+      + int Id
+      + int BookId
+      + int MemberId
+      + DateTime BorrowDate
+      + DateTime ReturnDate
+      + DateTime ActualReturnDate
+      --
+      + BorrowRecord()
+    }
+    class BookHistory {
+      + int Id
+      + int BookId
+      + string Action
+      + DateTime ActionDate
+      --
+      + BookHistory()
+    }
+  }
+
+  package Interfaces {
+    interface IBookService {
+      + void AddBook(Book book)
+      + void UpdateBook(Book book)
+      + void DeleteBook(int bookId)
+      + List<Book> GetAllBooks()
+      + Book GetBookById(int bookId)
+      + List<Book> SearchBooks(string keyword)
+    }
+    interface IMemberService {
+      + void AddMember(Member member)
+      + void UpdateMember(Member member)
+      + void DeleteMember(int memberId)
+      + List<Member> GetAllMembers()
+      + Member GetMemberById(int memberId)
+    }
+    interface IBorrowService {
+      + void BorrowBook(int bookId, int memberId)
+      + void ReturnBook(int bookId, int memberId)
+      + List<BorrowRecord> GetBorrowHistory(int memberId)
+      + List<BorrowRecord> GetOverdueBooks(DateTime currentDate)
+    }
+    interface IBookHistoryService {
+      + void AddBookHistory(BookHistory bookHistory)
+      + List<BookHistory> GetBookHistory(int bookId)
+    }
+    interface IBookRepository {
+      + void AddBook(Book book)
+      + void UpdateBook(Book book)
+      + void DeleteBook(int bookId)
+      + List<Book> GetAllBooks()
+      + Book GetBookById(int bookId)
+    }
+    interface IMemberRepository {
+      + void AddMember(Member member)
+      + void UpdateMember(Member member)
+      + void DeleteMember(int memberId)
+      + List<Member> GetAllMembers()
+      + Member GetMemberById(int memberId)
+    }
+    interface IBorrowRepository {
+      + void AddBorrowRecord(BorrowRecord borrowRecord)
+      + void UpdateBorrowRecord(BorrowRecord borrowRecord)
+      + List<BorrowRecord> GetAllBorrowRecords()
+      + BorrowRecord GetBorrowRecordById(int id)
+    }
+    interface IBookHistoryRepository {
+      + void AddBookHistory(BookHistory bookHistory)
+      + List<BookHistory> GetBookHistory(int bookId)
+    }
+  }
+
+  package Services {
+    class BookService {
+      - IBookRepository _bookRepository
+      - IBookHistoryService _bookHistoryService
+      + BookService(IBookRepository bookRepository, IBookHistoryService bookHistoryService)
+      + void AddBook(Book book)
+      + void UpdateBook(Book book)
+      + void DeleteBook(int bookId)
+      + List<Book> GetAllBooks()
+      + Book GetBookById(int bookId)
+      + List<Book> SearchBooks(string keyword)
+    }
+    class MemberService {
+      - IMemberRepository _memberRepository
+      + MemberService(IMemberRepository memberRepository)
+      + void AddMember(Member member)
+      + void UpdateMember(Member member)
+      + void DeleteMember(int memberId)
+      + List<Member> GetAllMembers()
+      + Member GetMemberById(int memberId)
+    }
+    class BorrowService {
+      - IBorrowRepository _borrowRepository
+      + BorrowService(IBorrowRepository borrowRepository)
+      + void BorrowBook(int bookId, int memberId)
+      + void ReturnBook(int bookId, int memberId)
+      + List<BorrowRecord> GetBorrowHistory(int memberId)
+      + List<BorrowRecord> GetOverdueBooks(DateTime currentDate)
+    }
+    class BookHistoryService {
+      - IBookHistoryRepository _bookHistoryRepository
+      + BookHistoryService(IBookHistoryRepository bookHistoryRepository)
+      + void AddBookHistory(BookHistory bookHistory)
+      + List<BookHistory> GetBookHistory(int bookId)
+    }
+  }
+
+  package Data {
+    class BookRepository {
+      - MySqlConnection _connection
+      + BookRepository(string connectionString)
+      + void AddBook(Book book)
+      + void UpdateBook(Book book)
+      + void DeleteBook(int bookId)
+      + List<Book> GetAllBooks()
+      + Book GetBookById(int bookId)
+    }
+    class MemberRepository {
+      - MySqlConnection _connection
+      + MemberRepository(string connectionString)
+      + void AddMember(Member member)
+      + void UpdateMember(Member member)
+      + void DeleteMember(int memberId)
+      + List<Member> GetAllMembers()
+      + Member GetMemberById(int memberId)
+    }
+    class BorrowRepository {
+      - MySqlConnection _connection
+      + BorrowRepository(string connectionString)
+      + void AddBorrowRecord(BorrowRecord borrowRecord)
+      + void UpdateBorrowRecord(BorrowRecord borrowRecord)
+      + List<BorrowRecord> GetAllBorrowRecords()
+      + BorrowRecord GetBorrowRecordById(int id)
+    }
+    class BookHistoryRepository {
+      - MySqlConnection _connection
+      + BookHistoryRepository(string connectionString)
+      + void AddBookHistory(BookHistory bookHistory)
+      + List<BookHistory> GetBookHistory(int bookId)
+    }
+  }
+
+  package UI {
+    class BlazorUI {
+      - IBookService _bookService
+      - IMemberService _memberService
+      - IBorrowService _borrowService
+      - IBookHistoryService _bookHistoryService
+      + BlazorUI(IBookService bookService, IMemberService memberService, IBorrowService borrowService, IBookHistoryService bookHistoryService)
+      + void Run()
+    }
+  }
+
+  Models.Book --> Interfaces.IBookRepository : uses
+  Models.Member --> Interfaces.IMemberRepository : uses
+  Models.BorrowRecord --> Interfaces.IBorrowRepository : uses
+  Models.BookHistory --> Interfaces.IBookHistoryRepository : uses
+
+  Interfaces.IBookService <|-- Services.BookService
+  Interfaces.IMemberService <|-- Services.MemberService
+  Interfaces.IBorrowService <|-- Services.BorrowService
+  Interfaces.IBookHistoryService <|-- Services.BookHistoryService
+
+  Interfaces.IBookRepository <|-- Data.BookRepository
+  Interfaces.IMemberRepository <|-- Data.MemberRepository
+  Interfaces.IBorrowRepository <|-- Data.BorrowRepository
+  Interfaces.IBookHistoryRepository <|-- Data.BookHistoryRepository
+
+  Services.BookService --> Interfaces.IBookRepository : uses
+  Services.BookService --> Interfaces.IBookHistoryService : uses
+  Services.MemberService --> Interfaces.IMemberRepository : uses
+  Services.BorrowService --> Interfaces.IBorrowRepository : uses
+  Services.BookHistoryService --> Interfaces.IBookHistoryRepository : uses
+
+  UI.BlazorUI --> Interfaces.IBookService : uses
+  UI.BlazorUI --> Interfaces.IMemberService : uses
+  UI.BlazorUI --> Interfaces.IBorrowService : uses
+  UI.BlazorUI --> Interfaces.IBookHistoryService : uses
+
+}
+@enduml

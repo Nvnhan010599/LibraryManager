@@ -1,0 +1,6 @@
+CREATE TABLE Member (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255),
+    Address VARCHAR(255),
+    Phone VARCHAR(20)
+);
